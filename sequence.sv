@@ -21,7 +21,8 @@ class dummy_seq extends uvm_sequence;
 
         repeat (no_of_tr) begin
             start_item(tr);
-            if (!tr.randomize());
+            if (!tr.randomize())
+                `uvm_fatal("Dummy Sequence", "Randomisation failed")
             finish_item(tr);
         end
     endtask
