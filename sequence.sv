@@ -1,8 +1,8 @@
 class dummy_seq extends uvm_sequence;
-    `uvm_object_utils(write_read_seq)
+    `uvm_object_utils(dummy_seq)
 
     transaction tr;
-    int no_of_tr
+    int no_of_tr;
 
     function new(string name = "dummy_sequence");
         super.new(name);
@@ -16,10 +16,10 @@ class dummy_seq extends uvm_sequence;
 
     task body();
         tr = transaction::type_id::create("tr");
-        
+
         // ? STEP 3: Add constraints here
 
-        repeat(no_of_tr) begin
+        repeat (no_of_tr) begin
             start_item(tr);
             if (!tr.randomize());
             finish_item(tr);

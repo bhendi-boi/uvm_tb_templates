@@ -1,4 +1,4 @@
-class rand_test extends base_test;
+class rand_test extends uvm_test;
     `uvm_component_utils(rand_test)
 
     // ? STEP 10: Declare sequences
