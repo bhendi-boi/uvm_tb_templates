@@ -14,7 +14,8 @@ class agnt extends uvm_agent;
         super.build_phase(phase);
         `uvm_info("Agent", "Build phase agent", UVM_HIGH)
         driver = drv::type_id::create("driver", this);
-        sequencer = seqr::type_id::create("sequencer", this);
+        // it is very unlikely that you'll extend a sequencer
+        sequencer = new("sequencer", this);
         monitor = mon::type_id::create("monitor", this);
     endfunction
 
