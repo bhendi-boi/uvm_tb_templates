@@ -11,6 +11,10 @@ class transaction extends uvm_sequence_item;
         super.new(name);
     endfunction
 
+    // write do_copy function
+    // write do_compare function
+    // write convert2string function
+
     function void do_print(uvm_printer printer);
         super.do_print(printer);
         // Print a transaction's fields here
