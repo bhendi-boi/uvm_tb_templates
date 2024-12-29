@@ -1,7 +1,7 @@
 class rand_test extends uvm_test;
     `uvm_component_utils(rand_test)
 
-    // ? STEP 10: Declare sequences
+    // ? STEP 9: Declare sequences
 
     function new(string name = "rand_test", uvm_component parent);
         super.new(name, parent);

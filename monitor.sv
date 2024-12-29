@@ -1,7 +1,7 @@
 class mon extends uvm_monitor;
     `uvm_component_utils(mon)
 
-    // ? STEP 7: If you've changed the interface name, change it here as well
+    // ? STEP 6: If you've changed the interface name, change it here as well
     virtual intf vif;
     transaction tr;
 

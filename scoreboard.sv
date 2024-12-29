@@ -1,7 +1,7 @@
 class scb extends uvm_scoreboard;
     `uvm_component_utils(scb)
 
-    // ? STEP 8: Change the analysis imp port if you want
+    // ? STEP 7: Change the analysis imp port if you want
     uvm_analysis_imp #(transaction, scb) scoreboard_port;
     transaction trs[$];
     transaction tr;

@@ -25,13 +25,13 @@ module tb ();
 
     intf vif ();
 
-    // ? STEP 11: Declare DUT
-    dut_design_name dut ();
+    // ? STEP 10: Declare DUT
+    // dut_design_name dut ();
 
     initial begin
         uvm_config_db#(virtual intf)::set(null, "*", "vif", vif);
         // ? Change uvm_test name here or you can do this from command line as well
-        run_test("error_test");
+        run_test("rand_test");
     end
 
     initial begin

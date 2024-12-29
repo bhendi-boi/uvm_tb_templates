@@ -20,7 +20,7 @@ class env extends uvm_env;
         super.connect_phase(phase);
         `uvm_info("Env", "Connect phase environment", UVM_HIGH)
 
-        // ? STEP 9: Change analysis imp port name if you've changed it in monitor or scoreboard
+        // ? STEP 8: Change analysis imp port name if you've changed it in monitor or scoreboard
         agent.monitor.monitor_port.connect(scoreboard.scoreboard_port);
     endfunction
 
