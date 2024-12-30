@@ -14,6 +14,8 @@
   ```
 - Open the cloned directory in your editor of choice.
 - Follow the steps laid down below to customise the testbench for your project needs.
+- After you are done with these steps, simulate the testbench with `UVM_VERBOSITY` set to `UVM_HIGH`.
+- You should be able to see constructed message from all the uvm components.
 
 ### Steps
 
