@@ -29,3 +29,4 @@
 8. [Optional] If you've changed analysis port name in scoreboard or monitor, change here as well.
 9. Declare sequences, instantiate them and start them on sequencer in [rand_test.sv](rand_test).
 10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench top).
+11. Write coverpoints in [coverage.sv](coverage).
