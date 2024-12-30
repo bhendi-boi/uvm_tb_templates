@@ -19,13 +19,13 @@
 
 ### Steps
 
-1. Define your interface signals in [interface.sv](interface).
+1. Define your interface signals in [interface.sv](interface.sv).
 2. Declare interface signals, constraints and `do_print` function in [seq_item](seq_item.sv).
-3. Add constraints or remove constraints required in [sequence.sv](sequence).
-4. [Optional] Change the [sequencer.sv](sequencer) if required.
-5. Fill the `drive` task in [driver.sv](driver).
-6. Fill the `sample` task in [monitor.sv](monitor).
-7. Fill the `compare` method in [scoreboard.sv](scoreboard). If compare method has to consume some time, make it into a task.
+3. Add constraints or remove constraints required in [sequence.sv](sequence.sv).
+4. [Optional] Change the [sequencer.sv](sequencer.sv) if required.
+5. Fill the `drive` task in [driver.sv](driver.sv).
+6. Fill the `sample` task in [monitor.sv](monitor.sv).
+7. Fill the `compare` method in [scoreboard.sv](scoreboard.sv). If compare method has to consume some time, make it into a task.
 8. [Optional] If you've changed analysis port name in scoreboard or monitor, change here as well.
-9. Declare sequences, instantiate them and start them on sequencer in [rand_test.sv](rand_test).
-10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench_top).
+9. Declare sequences, instantiate them and start them on sequencer in [rand_test.sv](rand_test.sv).
+10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench.sv).
