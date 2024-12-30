@@ -11,6 +11,7 @@ import uvm_pkg::*;
 `include "agent.sv"
 `include "coverage.sv"
 `include "scoreboard.sv"
+`include "coverage.sv"
 `include "env.sv"
 `include "rand_test.sv"
 
