@@ -28,4 +28,4 @@
 7. Fill the `compare` method in [scoreboard.sv](scoreboard). If compare method has to consume some time, make it into a task.
 8. [Optional] If you've changed analysis port name in scoreboard or monitor, change here as well.
 9. Declare sequences, instantiate them and start them on sequencer in [rand_test.sv](rand_test).
-10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench top).
+10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench_top).
