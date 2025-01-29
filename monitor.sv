@@ -20,7 +20,7 @@ class mon extends uvm_monitor;
         monitor_port = new("monitor_port", this);
 
         // ? If you've changed the interface name, change it here as well
-        if (!(uvm_config_db#(virtual intf)::get(this, "*", "vif", vif)))
+        if (!(uvm_config_db#(virtual intf)::get(this, "", "vif", vif)))
             `uvm_fatal("Monitor", "Couldn't get vif in monitor!")
     endfunction
 

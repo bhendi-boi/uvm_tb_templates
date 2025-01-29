@@ -15,7 +15,7 @@ class drv extends uvm_driver #(transaction);
         `uvm_info("Driver", "Build phase driver", UVM_HIGH)
 
         // ? If you've changed the interface name, change it here as well
-        if (!(uvm_config_db#(virtual intf)::get(this, "*", "vif", vif))) begin
+        if (!(uvm_config_db#(virtual intf)::get(this, "", "vif", vif))) begin
             `uvm_fatal("Driver", "Driver couldn't get vif")
         end
     endfunction
