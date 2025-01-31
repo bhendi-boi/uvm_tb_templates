@@ -23,11 +23,11 @@ class scb extends uvm_scoreboard;
 
     function void compare(transaction tr);
         if (!tr.reset_n) begin
-            if (q_out) begin
+            if (tr.q_out) begin
                 `uvm_error("Scoreboard", "Reset error.")
             end
         end else begin
-            if (d_in ^ q_out) begin
+            if (tr.d_in ^ tr.q_out) begin
                 `uvm_error("Scoreboard",
                            "Non reset error. D and Q doesn't match")
             end
