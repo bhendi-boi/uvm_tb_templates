@@ -4,13 +4,13 @@
 
 - This is a generic uvm testbench env intended to be used as a starting point for your next verification project.
 - This project assumes you are going to use only one agent i.e; the agent is active.
-- Coverage is not included as of now.
+- This branch also supports coverage.
 
 ## How to use
 
 - Clone this repo using this command
   ```bash
-      git clone https://github.com/bhendi-boi/uvm_tb_template.git
+      git clone -b coverage --single-branch https://github.com/bhendi-boi/uvm_tb_template.git
   ```
 - Open the cloned directory in your editor of choice.
 - Follow the steps laid down below to customise the testbench for your project needs.
@@ -25,7 +25,8 @@
 4. [Optional] Change the [sequencer.sv](sequencer.sv) if required.
 5. Fill the `drive` task in [driver.sv](driver.sv).
 6. Fill the `sample` task in [monitor.sv](monitor.sv).
-7. Fill the `compare` method in [scoreboard.sv](scoreboard.sv). If compare method has to consume some time, make it into a task.
+7. Fill the `compare` method in [scoreboard.sv](scoreboard.sv). If compare method has to consume some time, refactor it into a task.
 8. [Optional] If you've changed analysis port name in scoreboard or monitor, update the same in [env.sv](env.sv) as well.
 9. Declare sequences, instantiate them and start them on sequencer in [rand_test.sv](rand_test.sv).
 10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench.sv).
+11. Define your covergroup in [coverage.sv](coverage.sv).
