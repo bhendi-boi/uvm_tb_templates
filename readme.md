@@ -25,7 +25,7 @@
 4. [Optional] Change the [sequencer.sv](sequencer.sv) if required.
 5. Fill the `drive` task in [driver.sv](driver.sv).
 6. Fill the `sample` task in [monitor.sv](monitor.sv).
-7. Fill the `compare` method in [scoreboard.sv](scoreboard.sv). If compare method has to consume some time, make it into a task.
+7. Fill the `compare` method in [scoreboard.sv](scoreboard.sv). If compare method has to consume some time, refactor it into a task.
 8. [Optional] If you've changed analysis port name in scoreboard or monitor, update the same in [env.sv](env.sv) as well.
 9. Declare sequences, instantiate them and start them on sequencer in [rand_test.sv](rand_test.sv).
 10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench.sv).
