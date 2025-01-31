@@ -32,7 +32,7 @@ module tb ();
     );
 
     initial begin
-        uvm_config_db#(virtual intf)::set(null, "uvm_test_top", "vif", vif);
+        uvm_config_db#(virtual intf)::set(null, "uvm_test_top*", "vif", vif);
         // ? Change uvm_test name here or you can do this from command line as well
         run_test("rand_test");
     end
