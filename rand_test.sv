@@ -3,7 +3,7 @@ class rand_test extends uvm_test;
 
     env environment;
     // ? STEP 9: Declare sequences
-    dummy_seq dummy_seqence;
+    dummy_seq dummy_sequence;
 
     function new(string name = "rand_test", uvm_component parent);
         super.new(name, parent);
