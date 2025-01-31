@@ -22,7 +22,16 @@ class scb extends uvm_scoreboard;
     endfunction
 
     function void compare(transaction tr);
-        // ? Fill this method with your comparison logic
+        if (!tr.reset_n) begin
+            if (q_out) begin
+                `uvm_error("Scoreboard", "Reset error.")
+            end
+        end else begin
+            if (d_in ^ q_out) begin
+                `uvm_error("Scoreboard",
+                           "Non reset error. D and Q doesn't match")
+            end
+        end
     endfunction
 
     task run_phase(uvm_phase phase);

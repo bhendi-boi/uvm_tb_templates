@@ -41,7 +41,11 @@ class mon extends uvm_monitor;
     endtask
 
     task sample ();
-        // ? Fill this task
+        @(posedge vif.clk);
+        tr.reset_n = vif.reset_n;
+        tr.d_in = vif.d_in;
+        @(posedge vif.clk);
+        tr.q_out = vif.q_out;
     endtask
 
 

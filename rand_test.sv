@@ -3,6 +3,7 @@ class rand_test extends uvm_test;
 
     env environment;
     // ? STEP 9: Declare sequences
+    dummy_seq dummy_seqence;
 
     function new(string name = "rand_test", uvm_component parent);
         super.new(name, parent);
@@ -20,13 +21,14 @@ class rand_test extends uvm_test;
         phase.raise_objection(this);
 
         // ? instantiate sequences
+        dummy_seqence = dummy_seq::type_id::create("d0");
 
         // Set no of transaction a sequence should generate
         //  example syntax
-        // dummy_sequence.set_no_of_tr(1024);
+        dummy_sequence.set_no_of_tr(1024);
 
         // ? start them on sequencer
-        // dummy_seqence.start(environment.agent.sequencer);
+        dummy_seqence.start(environment.agent.sequencer);
 
         // ? add any extra simulation delay
 

@@ -15,17 +15,21 @@ import uvm_pkg::*;
 
 module tb ();
 
-    logic clk;
 
     initial begin
-        clk = 0;
-        forever #10 clk = ~clk;
+        vif.clk = 0;
+        forever #10 vif.clk = ~vif.clk;
     end
 
     intf vif ();
 
     // ? STEP 10: Declare DUT
-    // dut_design_name dut ();
+    d_ff dut (
+        .clk(vif.clk),
+        .reset_n(vif.reset_n),
+        .d_in(vif.d_in),
+        .q_out(vif.q_out)
+    );
 
     initial begin
         uvm_config_db#(virtual intf)::set(null, "uvm_test_top", "vif", vif);
