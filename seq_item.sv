@@ -18,12 +18,13 @@ class transaction extends uvm_sequence_item;
     // write do_compare function
     // write convert2string function
 
-    function void do_print(uvm_printer printer);
-        super.do_print(printer);
-        // Print a transaction's fields here
-        printer.print_field_int("Reset", reset_n, 1, UVM_HEX);
-        printer.print_field_int("D input", d_in, 1, UVM_HEX);
-        printer.print_field_int("Q output", q_out, 1, UVM_HEX);
-    endfunction
+    // ? Use this function only if you are using uvm-1.2 or above
+    // function void do_print(uvm_printer printer);
+    //     super.do_print(printer);
+    //     // Print a transaction's fields here
+    //     printer.print_field_int("Reset", reset_n, 1, UVM_HEX);
+    //     printer.print_field_int("D input", d_in, 1, UVM_HEX);
+    //     printer.print_field_int("Q output", q_out, 1, UVM_HEX);
+    // endfunction
 
 endclass
