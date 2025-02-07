@@ -44,12 +44,28 @@ def write_to_interface(input_ports, output_ports):
     file.close()
 
 
-if __name__ == "__main__":
-    print("Reading the design.sv file")
-    file = open("design.sv", "r")
+def main():
+
+    # Taking filename as a parameter
+    file_name = input(
+        "Enter design file name (Hit enter to consider default `design.sv`)"
+    )
+    if file_name == "":
+        file_name = "design.sv"
+
+    print(f"Opening {file_name}")
+
+    try:
+        file = open(file_name, "r")
+    except:
+        print("File not found")
+        return  # Quitting if file is not found
+
     raw_content_as_lines = file.readlines()
     raw_content = ""
     file.close()
+
+    print(f"Read {file_name}")
 
     # removing EOLs
     for line in raw_content_as_lines:
@@ -111,3 +127,7 @@ if __name__ == "__main__":
     print(outputs_map)
 
     write_to_interface(inputs_map, outputs_map)
+
+
+if __name__ == "__main__":
+    main()
