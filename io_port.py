@@ -97,6 +97,81 @@ def write_to_interface(input_ports, output_ports):
     print("Populated interface with port information")
 
 
+def write_to_seq_item(input_ports, output_ports):
+    print("Opening seq_item.sv")
+    file = open("seq_item.sv", "r")
+    raw_content = file.readlines()
+    file.close()
+
+    clk_port_name = input(
+        "Please enter clk port name. We ask this to omit clk port from seq_item. "
+    )
+    if clk_port_name not in input_ports["port_name"].values:
+        clk_port_name = input(
+            f"Unable to find {clk_port_name}.Please enter clk port name again. "
+        )
+        if clk_port_name not in input_ports["port_name"].values:
+            print(f"Unable to find {clk_port_name}. Closing seq_item.sv")
+            file.close()
+            print("Abort")
+            return
+
+    input_port_content = ""
+    # add input ports
+    for _, row in input_ports.iterrows():
+        port_name = row["port_name"]
+        logic_or_bit = row["logic_or_bit"]
+        no_of_bits = row["no_of_bits"]
+
+        # not declaring clk port
+        if port_name == clk_port_name:
+            continue
+
+        if no_of_bits == 1:
+            if logic_or_bit:
+                input_port_content += f"\tlogic {port_name};\n"
+            else:
+                input_port_content += f"\tbit {port_name};\n"
+        else:
+            high = no_of_bits - 1
+            if logic_or_bit:
+                input_port_content += f"\tlogic [{high}:0] {port_name};\n"
+            else:
+                input_port_content += f"\tbit [{high}:0] {port_name};\n"
+
+    raw_content[4] += input_port_content
+
+    output_port_content = ""
+    # add input ports
+    for _, row in output_ports.iterrows():
+        port_name = row["port_name"]
+        logic_or_bit = row["logic_or_bit"]
+        no_of_bits = row["no_of_bits"]
+
+        if no_of_bits == 1:
+            if logic_or_bit:
+                output_port_content += f"\tlogic {port_name};\n"
+            else:
+                output_port_content += f"\tbit {port_name};\n"
+        else:
+            high = no_of_bits - 1
+            if logic_or_bit:
+                output_port_content += f"\tlogic [{high}:0] {port_name};\n"
+            else:
+                output_port_content += f"\tbit [{high}:0] {port_name};\n"
+
+    raw_content[7] += output_port_content
+
+    new_raw_content = ""
+    for line in raw_content:
+        new_raw_content += line
+
+    file = open("seq_item.sv", "w")
+    file.write(new_raw_content)
+    file.close()
+    print("Populated seq_item with port information.")
+
+
 def main():
 
     # Taking filename as a parameter
@@ -240,6 +315,13 @@ def main():
     )
     if should_write_to_interface == "y" or should_write_to_interface == "":
         write_to_interface(inputs_df, outputs_df)
+
+    print("\n")
+    should_write_to_seq_item = input(
+        "Do you wish to populate seq_item with these ports? (y/n)"
+    )
+    if should_write_to_seq_item == "y" or should_write_to_seq_item == "":
+        write_to_seq_item(inputs_df, outputs_df)
 
 
 if __name__ == "__main__":
