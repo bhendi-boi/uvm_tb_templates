@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def get_port_name_and_no_of_bits(port_name_bits_split: len):
     port_name = ""
     no_of_bits = 1
@@ -19,29 +22,79 @@ def get_port_name_and_no_of_bits(port_name_bits_split: len):
 
 
 def write_to_interface(input_ports, output_ports):
+    print("Opening interface.sv")
     file = open("interface.sv", "w+")
-    file.write("interface intf ();\n")
 
-    file.write("\t// input ports\n")
-    # add input ports
-    for port_name in input_ports.keys():
-        if input_ports[port_name] == 1:
-            file.write(f"\tlogic {port_name};\n")
+    has_clk_as_input = input(
+        "Do you wish to have clk as an input to the interface (y/n)"
+    )
+
+    if has_clk_as_input == "y" or has_clk_as_input == "":
+        clk_port_name = input("Enter your clk port name (case sensitive) ")
+        print(clk_port_name)
+        if clk_port_name not in input_ports["port_name"].values:
+            clk_port_name = input(
+                f"Unable to find {clk_port_name}. Please enter clk port name again "
+            )
+            if clk_port_name not in input_ports["port_name"].values:
+                print(f"Unable to find {clk_port_name}. Closing interface.sv")
+                file.close()
+                print("Abort")
+                return
         else:
-            high = input_ports[port_name] - 1
-            file.write(f"\tlogic [{high}:0] {port_name};\n")
+            file.write(f"interface intf (input logic {clk_port_name});\n")
+
+    else:
+        file.write("interface intf ();\n")
+    file.write("\t// input ports\n")
+
+    # add input ports
+    for _, row in input_ports.iterrows():
+        port_name = row["port_name"]
+        logic_or_bit = row["logic_or_bit"]
+        no_of_bits = row["no_of_bits"]
+
+        # if clk is a input port for the interface, don't add it again.
+        if has_clk_as_input == "y" or has_clk_as_input == "":
+            if port_name == clk_port_name:
+                continue
+
+        if no_of_bits == 1:
+            if logic_or_bit:
+                file.write(f"\tlogic {port_name};\n")
+            else:
+                file.write(f"\tbit {port_name};\n")
+        else:
+            high = no_of_bits - 1
+            if logic_or_bit:
+                file.write(f"\tlogic [{high}:0] {port_name};\n")
+            else:
+                file.write(f"\tbit [{high}:0] {port_name};\n")
 
     file.write("\n\t// output ports\n")
+
     # add output ports
-    for port_name in output_ports.keys():
-        if output_ports[port_name] == 1:
-            file.write(f"\tlogic {port_name};\n")
+    for _, row in output_ports.iterrows():
+        port_name = row["port_name"]
+        logic_or_bit = row["logic_or_bit"]
+        no_of_bits = row["no_of_bits"]
+
+        if no_of_bits == 1:
+            if logic_or_bit:
+                file.write(f"\tlogic {port_name};\n")
+            else:
+                file.write(f"\tbit {port_name};\n")
         else:
-            high = output_ports[port_name] - 1
-            file.write(f"\tlogic [{high}:0] {port_name};\n")
+            high = no_of_bits - 1
+            if logic_or_bit:
+                file.write(f"\tlogic [{high}:0] {port_name};\n")
+            else:
+                file.write(f"\tbit [{high}:0] {port_name};\n")
 
     file.write("endinterface : intf\n")
     file.close()
+
+    print("Populated interface with port information")
 
 
 def main():
@@ -90,8 +143,20 @@ def main():
 
     # inputs map
     # key is port name and val is no of bits per port
-    inputs_map = dict()
-    outputs_map = dict()
+    inputs_df = pd.DataFrame(
+        {
+            "port_name": pd.Series(dtype="str"),  # Or 'object'
+            "logic_or_bit": pd.Series(dtype="bool"),  # Or 'int' if it's an integer
+            "no_of_bits": pd.Series(dtype="int"),
+        }
+    )
+    outputs_df = pd.DataFrame(
+        {
+            "port_name": pd.Series(dtype="str"),  # Or 'object'
+            "logic_or_bit": pd.Series(dtype="bool"),  # Or 'int' if it's an integer
+            "no_of_bits": pd.Series(dtype="int"),
+        }
+    )
 
     input_matchings = ["inputlogic", "inputbit"]
     output_matchings = ["outputlogic", "outputbit"]
@@ -108,7 +173,29 @@ def main():
                 port_name_bits_split=port_name_bits_split
             )
 
-            inputs_map[port_name] = no_of_bits
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 1,
+                "no_of_bits": no_of_bits,
+            }
+            inputs_df.loc[len(inputs_df)] = new_port
+
+        if port.startswith(input_matchings[1]):
+            str_len = len(input_matchings[1])
+            port_name_with_bits = port[str_len:]
+            port_name_bits_split = port_name_with_bits.split("]")
+
+            [port_name, no_of_bits] = get_port_name_and_no_of_bits(
+                port_name_bits_split=port_name_bits_split
+            )
+
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 0,
+                "no_of_bits": no_of_bits,
+            }
+            inputs_df.loc[len(inputs_df)] = new_port
+
         if port.startswith(output_matchings[0]):
             str_len = len(output_matchings[0])
             port_name_with_bits = port[str_len:]
@@ -117,16 +204,42 @@ def main():
             [port_name, no_of_bits] = get_port_name_and_no_of_bits(
                 port_name_bits_split=port_name_bits_split
             )
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 1,
+                "no_of_bits": no_of_bits,
+            }
+            outputs_df.loc[len(outputs_df)] = new_port
 
-            outputs_map[port_name] = no_of_bits
+        if port.startswith(output_matchings[1]):
+            str_len = len(output_matchings[1])
+            port_name_with_bits = port[str_len:]
+            port_name_bits_split = port_name_with_bits.split("]")
 
-    print("Found these input ports")
-    print(inputs_map)
+            [port_name, no_of_bits] = get_port_name_and_no_of_bits(
+                port_name_bits_split=port_name_bits_split
+            )
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 0,
+                "no_of_bits": no_of_bits,
+            }
+            outputs_df.loc[len(outputs_df)] = new_port
 
-    print("Found these output ports")
-    print(outputs_map)
+    print("\n\n")
+    print("Found these input ports\n")
+    print(inputs_df)
+    print("\n\n")
 
-    write_to_interface(inputs_map, outputs_map)
+    print("Found these output ports\n")
+    print(outputs_df)
+    print("\n\n")
+
+    should_write_to_interface = input(
+        "Do you wish to populate interface with these ports? (y/n)"
+    )
+    if should_write_to_interface == "y" or should_write_to_interface == "":
+        write_to_interface(inputs_df, outputs_df)
 
 
 if __name__ == "__main__":
