@@ -129,15 +129,15 @@ def write_to_seq_item(input_ports, output_ports):
 
         if no_of_bits == 1:
             if logic_or_bit:
-                input_port_content += f"\tlogic {port_name};\n"
+                input_port_content += f"\trand logic {port_name};\n"
             else:
-                input_port_content += f"\tbit {port_name};\n"
+                input_port_content += f"\trand bit {port_name};\n"
         else:
             high = no_of_bits - 1
             if logic_or_bit:
-                input_port_content += f"\tlogic [{high}:0] {port_name};\n"
+                input_port_content += f"\trand logic [{high}:0] {port_name};\n"
             else:
-                input_port_content += f"\tbit [{high}:0] {port_name};\n"
+                input_port_content += f"\trand bit [{high}:0] {port_name};\n"
 
     raw_content[4] += input_port_content
 
