@@ -17,6 +17,24 @@
 - After you are done with these steps, simulate the testbench with `UVM_VERBOSITY` set to `UVM_HIGH`.
 - You should be able to see constructed message from all the uvm components.
 
+## How to use the included `io_port` script.
+
+- Download dependencies (Only has pandas for now. Working on making the script run without pandas)
+  ```
+  pip install -r requirements.txt
+  ```
+- Run the script
+  #### Windows
+  ```
+  python io_port.py
+  ```
+  #### Linux
+  ```
+  python3 io_port.py
+  ```
+- This script can populate [interface](interface.sv) and [seq_item](seq_item.sv) classes with io ports information. So if you are using this script, you can skip the first two steps.
+- You can hit enter to consider the default value while using this script.
+
 ### Steps
 
 1. Define your interface signals in [interface.sv](interface.sv).
