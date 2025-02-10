@@ -34,6 +34,8 @@
   ```
 - This script can populate [interface](interface.sv) and [seq_item](seq_item.sv) classes with io ports information. So if you are using this script, you can skip the first two steps.
 - You can hit enter to consider the default value while using this script.
+- #### Some Caveats
+  This script is designed to work only with files that come out of the box i.e., if you change [interface](interface.sv) or [seq_item](seq_item.sv) before running the script, the script might not work properly.
 
 ### Steps
 
