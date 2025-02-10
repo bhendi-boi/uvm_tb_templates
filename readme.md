@@ -19,7 +19,7 @@
 
 ## How to use the included `io_port` script.
 
-- Download dependencies (Only has pandas for now. Working on making the script run without pandas)
+- Download dependencies (Is dependent on pandas for now. Working on making the script run without pandas)
   ```
   pip install -r requirements.txt
   ```
