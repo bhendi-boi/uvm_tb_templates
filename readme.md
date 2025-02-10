@@ -10,7 +10,7 @@
 
 - Clone this repo using this command
   ```bash
-      git clone https://github.com/bhendi-boi/uvm_tb_templates.git
+  git clone -b vanilla-with-io --single-branch https://github.com/bhendi-boi/uvm_tb_templates.git
   ```
 - Open the cloned directory in your editor of choice.
 - Follow the steps laid down below to customise the testbench for your project needs.
