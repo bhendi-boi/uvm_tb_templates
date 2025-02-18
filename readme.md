@@ -10,12 +10,32 @@
 
 - Clone this repo using this command
   ```bash
-      git clone -b coverage --single-branch https://github.com/bhendi-boi/uvm_tb_templates.git
+      git clone -b coverage-with-io --single-branch https://github.com/bhendi-boi/uvm_tb_templates.git
   ```
 - Open the cloned directory in your editor of choice.
 - Follow the steps laid down below to customise the testbench for your project needs.
 - After you are done with these steps, simulate the testbench with `UVM_VERBOSITY` set to `UVM_HIGH`.
 - You should be able to see constructed message from all the uvm components.
+
+## How to use the included `io_port` script.
+
+- Download dependencies (Is dependent on pandas for now. Working on making the script run without pandas)
+  ```
+  pip install -r requirements.txt
+  ```
+- Run the script
+  #### Windows
+  ```
+  python io_port.py
+  ```
+  #### Linux
+  ```
+  python3 io_port.py
+  ```
+- This script can populate [interface](interface.sv) and [seq_item](seq_item.sv) classes with io ports information. So if you are using this script, you can skip the first two steps.
+- You can hit enter to consider the default value while using this script.
+- #### Some Caveats
+  This script is designed to work only with files that come out of the box i.e., if you change [interface](interface.sv) or [seq_item](seq_item.sv) before running the script, the script might not work properly.
 
 ### Steps
 
