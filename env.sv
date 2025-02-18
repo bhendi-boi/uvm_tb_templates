@@ -1,7 +1,8 @@
 class env extends uvm_env;
     `uvm_component_utils(env)
 
-    agnt agent;
+    agnt act_agent;
+    agnt pas_agent;
     scb  scoreboard;
 
     function new(string name = "env", uvm_component parent);
@@ -12,7 +13,9 @@ class env extends uvm_env;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         `uvm_info("Env", "Build phase environment", UVM_HIGH)
-        agent = agnt::type_id::create("agent", this);
+        act_agent = agnt::type_id::create("act_agent", this);
+        pas_agent = agnt::type_id::create("pas_agent", this);
+        pas_agent.set_active_or_passive(UVM_PASSIVE);
         scoreboard = scb::type_id::create("scoreboard", this);
     endfunction
 
@@ -21,7 +24,7 @@ class env extends uvm_env;
         `uvm_info("Env", "Connect phase environment", UVM_HIGH)
 
         // ? STEP 8: Change analysis imp port name if you've changed it in monitor or scoreboard
-        agent.monitor.monitor_port.connect(scoreboard.scoreboard_port);
+        pas_agent.monitor.monitor_port.connect(scoreboard.scoreboard_port);
     endfunction
 
 
