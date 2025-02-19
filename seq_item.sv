@@ -3,9 +3,12 @@ class transaction extends uvm_sequence_item;
 
     // ? STEP 2
     // declare DUT inputs as rand here
+	rand logic reset_n;
+	rand logic d_in;
 
 
     // declare DUT output as logic here
+	logic q_out;
 
     function new(string name = "transaction");
         super.new(name);

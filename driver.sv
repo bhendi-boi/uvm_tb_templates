@@ -37,6 +37,10 @@ class drv extends uvm_driver #(transaction);
 
     task drive(transaction tr);
         // ? Fill this task
+        @(posedge vif.clk);
+        vif.reset_n <= tr.reset_n;
+        vif.d_in <= tr.d_in;
+        @(posedge vif.clk);
     endtask
 
 endclass
