@@ -3,7 +3,7 @@
 ## Overview
 
 - This is a generic uvm testbench env intended to be used as a starting point for your next verification project.
-- This project assumes you are going to use only one agent i.e; the agent is active.
+- This project assumes you are going to use two agents, one active and one passive.
 - Coverage is not included as of now.
 
 ## How to use
