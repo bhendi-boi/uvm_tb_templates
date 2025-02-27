@@ -3,7 +3,7 @@ class transaction extends uvm_sequence_item;
 
     // ? STEP 2
     // declare DUT inputs as rand here
-    rand logic reset_n;
+         logic reset_n;
     rand logic d_in;
 
 

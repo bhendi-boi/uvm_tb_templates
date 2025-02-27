@@ -25,6 +25,8 @@ class drv extends uvm_driver #(transaction);
         super.run_phase(phase);
         `uvm_info("Driver", "Run phase driver", UVM_HIGH)
         tr = transaction::type_id::create("tr");
+	
+        reset_dut();
 
         forever begin
             seq_item_port.get_next_item(tr);
@@ -35,9 +37,15 @@ class drv extends uvm_driver #(transaction);
         end
     endtask
 
+    task reset_dut();
+      vif.reset_n <= 1'b0;
+      vif.d_in <= 'h0;
+      @(posedge vif.clk);
+    endtask
+
     task drive(transaction tr);
         @(posedge vif.clk);
-        vif.reset_n <= tr.reset_n;
+        vif.reset_n <= 1'b1;
         vif.d_in <= tr.d_in;
         @(posedge vif.clk);
     endtask
