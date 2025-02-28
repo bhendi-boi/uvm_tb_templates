@@ -210,8 +210,50 @@ def main():
 
     # retrieve port content
     temp = content.split("(")[1]  # first member is always module module_name
+
+    # retrieve parameter info
+    parameters = pd.DataFrame(
+        {
+            "name": pd.Series(dtype="str"),
+            "default": pd.Series(dtype=bool),
+            "default_val": pd.Series(dtype=int),
+        }
+    )
     if temp.startswith("parameter"):
+        print("Modules has parameters")
+        parameter_text = temp
         temp = content.split("(")[2]  # module has parameters
+        parameters_raw = parameter_text.split(",")
+
+        for raw_parameter in parameters_raw:
+            # parameter has 9 characters
+            pieces = raw_parameter.split("=")
+
+            name = pieces[0][9:]
+            if name.endswith(")"):
+                name = name[:-1]  # last parameter will have ) at the end
+            print(name)
+
+            default = False
+            if len(pieces) > 1:
+                default = True
+
+            default_value = -1
+            if default:
+                default_value = pieces[1]
+
+            new_parameter = {
+                "name": name,
+                "default": default,
+                "default_val": default_value,
+            }
+
+            parameters.loc[len(parameters)] = new_parameter
+
+        print("\n")
+        print("Found these parameters (-1 indicated no default value)\n")
+        print(parameters)
+        print("\n")
 
     port_content = temp.split(")")[0]
     port_content_list = port_content.split(",")
