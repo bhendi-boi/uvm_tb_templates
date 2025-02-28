@@ -1,4 +1,4 @@
-class dummy_seq extends uvm_sequence;
+class dummy_seq extends uvm_sequence #(transaction);
     `uvm_object_utils(dummy_seq)
 
     transaction tr;
