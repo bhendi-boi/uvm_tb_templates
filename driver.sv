@@ -45,7 +45,7 @@ class drv extends uvm_driver #(transaction);
 
     task drive(transaction tr);
         @(posedge vif.clk);
-        vif.reset_n <= 1'b1;
+        vif.reset_n <= tr.reset_n;
         vif.d_in <= tr.d_in;
         @(posedge vif.clk);
     endtask

@@ -3,7 +3,7 @@ class transaction extends uvm_sequence_item;
 
     // ? STEP 2
     // declare DUT inputs as rand here
-         logic reset_n;
+    rand logic reset_n;
     rand logic d_in;
 
 
@@ -13,6 +13,8 @@ class transaction extends uvm_sequence_item;
     function new(string name = "transaction");
         super.new(name);
     endfunction
+
+    constraint reset_n_c { reset_n dist {0:/10, 1:/90};}
 
     // write do_copy function
     // write do_compare function
