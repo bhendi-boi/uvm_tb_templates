@@ -172,6 +172,72 @@ def write_to_seq_item(input_ports, output_ports):
     print("Populated seq_item with port information.")
 
 
+def write_to_testbench(input_ports, output_ports, parameters, dut_name):
+    dut_instantiation = "\t"
+
+    dut_instantiation += dut_name
+    dut_instantiation += " dut"
+
+    if len(parameters) > 0:
+        dut_instantiation += "#(\n"
+        for i, row in parameters.iterrows():
+            name = row["name"]
+            default = row["default"]
+            value = row["default_val"]
+
+            if not default:
+                value = input(f"Please enter value for parameter {name}: ")
+
+            dut_instantiation += f"\t\t{name}={value}"
+
+            if i != (len(parameters) - 1):
+                dut_instantiation += ",\n"
+            else:
+                dut_instantiation += "\n"
+        dut_instantiation += "\t)"
+
+    dut_instantiation += "(\n"
+
+    for i, row in input_ports.iterrows():
+        port_name = row["port_name"]
+        dut_instantiation += f"\t\t.{port_name}(vif.{port_name})"
+        dut_instantiation += ",\n"
+
+    for i, row in output_ports.iterrows():
+        port_name = row["port_name"]
+        dut_instantiation += f"\t\t.{port_name}(vif.{port_name})"
+
+        if i != (len(output_ports) - 1):
+            dut_instantiation += ","
+
+        dut_instantiation += "\n"
+
+    dut_instantiation += "\t);"
+    dut_instantiation += "\n"
+
+    print("Opening testbench.sv")
+    file = open("testbench.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    raw_lines[27] = dut_instantiation
+
+    new_file_as_string = ""
+
+    for i in raw_lines:
+        new_file_as_string += i
+
+    print("Writing this dut instantiation to testbench.sv")
+    print("\n")
+    print(dut_instantiation)
+    print("\n")
+
+    file = open("testbench.sv", "w")
+    file.write(new_file_as_string)
+    file.close()
+    print("Closing testbench.sv")
+
+
 def main():
 
     # Taking filename as a parameter
@@ -208,10 +274,60 @@ def main():
 
     print("Sanitised contents")
 
+    # module has 6 characters
+    dut_name = (content.split("(")[0])[6:]
+
     # retrieve port content
     temp = content.split("(")[1]  # first member is always module module_name
+
+    # retrieve parameter info
+    parameters = pd.DataFrame(
+        {
+            "name": pd.Series(dtype="str"),
+            "default": pd.Series(dtype=bool),
+            "default_val": pd.Series(dtype=int),
+        }
+    )
     if temp.startswith("parameter"):
+
+        dut_name = dut_name[:-1]  # has # as the last char
+        print(f"DUT name: {dut_name}")
+        parameter_text = temp
         temp = content.split("(")[2]  # module has parameters
+        parameters_raw = parameter_text.split(",")
+
+        print("Modules has parameters")
+        for raw_parameter in parameters_raw:
+            # parameter has 9 characters
+            pieces = raw_parameter.split("=")
+
+            name = pieces[0][9:]
+            if name.endswith(")"):
+                name = name[:-1]  # last parameter will have ) at the end
+
+            default = False
+            if len(pieces) > 1:
+                default = True
+
+            default_value = -1
+            if default:
+                default_value = pieces[1]
+
+            new_parameter = {
+                "name": name,
+                "default": default,
+                "default_val": default_value,
+            }
+
+            parameters.loc[len(parameters)] = new_parameter
+
+        print("\n")
+        print("Found these parameters (-1 indicated no default value)\n")
+        print(parameters)
+        print("\n")
+
+    if len(parameters) == 0:
+        print(f"DUT name: {dut_name}")
 
     port_content = temp.split(")")[0]
     port_content_list = port_content.split(",")
@@ -322,6 +438,13 @@ def main():
     )
     if should_write_to_seq_item == "y" or should_write_to_seq_item == "":
         write_to_seq_item(inputs_df, outputs_df)
+
+    print("\n")
+    should_write_to_testbench = input(
+        "Do you wish to update testbench with dut instantiation (y/n)?"
+    )
+    if should_write_to_testbench == "y" or should_write_to_testbench == "":
+        write_to_testbench(inputs_df, outputs_df, parameters, dut_name)
 
 
 if __name__ == "__main__":
