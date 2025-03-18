@@ -189,6 +189,25 @@ def write_to_seq_item(input_ports, output_ports):
     print("Populated seq_item with port information.")
 
 
+def write_to_driver():
+    file = open("driver.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    drive_content = """ \t\t@(posedge vif.clk);
+        vif.reset_n <= tr.reset_n;
+        vif.d_in <= tr.d_in;
+        @(posedge vif.clk);\n"""
+
+    raw_lines[38] = drive_content
+
+    print("Opening driver.sv")
+    file = open("driver.sv", "w")
+    file.writelines(raw_lines)
+    print("Closing driver.sv")
+    file.close()
+
+
 def write_to_testbench(input_ports, output_ports, parameters, dut_name):
     dut_instantiation = "\t"
 
@@ -421,6 +440,7 @@ if __name__ == "__main__":
     write_to_seq_item(inputs_df, outputs_df)
 
     # Step 4: update driver
+    write_to_driver()
 
     # Step 5: update monitor
 
@@ -429,4 +449,4 @@ if __name__ == "__main__":
     # Step 7: update rand_test
 
     # Step 8: update testbench
-    write_to_testbench(inputs_df, outputs_df, parameters, dut_name)
+    # write_to_testbench(inputs_df, outputs_df, parameters, dut_name)
