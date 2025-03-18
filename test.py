@@ -228,6 +228,31 @@ def write_to_monitor():
     file.close()
 
 
+def write_to_scoreboard():
+    file = open("scoreboard.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    sample_content = """\t\tif (!tr.reset_n) begin
+            if (tr.q_out) begin
+                `uvm_error("Scoreboard", "Reset error.")
+            end
+        end else begin
+            if (tr.d_in ^ tr.q_out) begin
+                `uvm_error("Scoreboard",
+                           "Non reset error. D and Q doesn't match")
+            end
+        end\n"""
+
+    raw_lines[24] = sample_content
+
+    print("Opening scoreboard.sv")
+    file = open("scoreboard.sv", "w")
+    file.writelines(raw_lines)
+    print("Closing scoreboard.sv")
+    file.close()
+
+
 def write_to_testbench(input_ports, output_ports, parameters, dut_name):
     dut_instantiation = "\t"
 
@@ -466,6 +491,7 @@ if __name__ == "__main__":
     write_to_monitor()
 
     # Step 6: update scoreboard
+    write_to_scoreboard()
 
     # Step 7: update rand_test
 
