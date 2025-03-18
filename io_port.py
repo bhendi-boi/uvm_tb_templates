@@ -31,7 +31,7 @@ def write_to_interface(input_ports, output_ports):
 
     if has_clk_as_input == "y" or has_clk_as_input == "":
         clk_port_name = input("Enter your clk port name (case sensitive) ")
-        print(clk_port_name)
+
         if clk_port_name not in input_ports["port_name"].values:
             clk_port_name = input(
                 f"Unable to find {clk_port_name}. Please enter clk port name again "
