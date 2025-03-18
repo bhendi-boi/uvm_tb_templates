@@ -208,6 +208,26 @@ def write_to_driver():
     file.close()
 
 
+def write_to_monitor():
+    file = open("monitor.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    sample_content = """\t\t@(posedge vif.clk);
+        tr.reset_n = vif.reset_n;
+        tr.d_in = vif.d_in;
+        @(posedge vif.clk);
+        tr.q_out = vif.q_out;\n"""
+
+    raw_lines[43] = sample_content
+
+    print("Opening monitor.sv")
+    file = open("monitor.sv", "w")
+    file.writelines(raw_lines)
+    print("Closing monitor.sv")
+    file.close()
+
+
 def write_to_testbench(input_ports, output_ports, parameters, dut_name):
     dut_instantiation = "\t"
 
@@ -443,6 +463,7 @@ if __name__ == "__main__":
     write_to_driver()
 
     # Step 5: update monitor
+    write_to_monitor()
 
     # Step 6: update scoreboard
 
