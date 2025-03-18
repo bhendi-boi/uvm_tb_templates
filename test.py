@@ -189,6 +189,72 @@ def write_to_seq_item(input_ports, output_ports):
     print("Populated seq_item with port information.")
 
 
+def write_to_testbench(input_ports, output_ports, parameters, dut_name):
+    dut_instantiation = "\t"
+
+    dut_instantiation += dut_name
+    dut_instantiation += " dut"
+
+    if len(parameters) > 0:
+        dut_instantiation += "#(\n"
+        for i, row in parameters.iterrows():
+            name = row["name"]
+            default = row["default"]
+            value = row["default_val"]
+
+            if not default:
+                value = input(f"Please enter value for parameter {name}: ")
+
+            dut_instantiation += f"\t\t{name}={value}"
+
+            if i != (len(parameters) - 1):
+                dut_instantiation += ",\n"
+            else:
+                dut_instantiation += "\n"
+        dut_instantiation += "\t)"
+
+    dut_instantiation += "(\n"
+
+    for i, row in input_ports.iterrows():
+        port_name = row["port_name"]
+        dut_instantiation += f"\t\t.{port_name}(vif.{port_name})"
+        dut_instantiation += ",\n"
+
+    for i, row in output_ports.iterrows():
+        port_name = row["port_name"]
+        dut_instantiation += f"\t\t.{port_name}(vif.{port_name})"
+
+        if i != (len(output_ports) - 1):
+            dut_instantiation += ","
+
+        dut_instantiation += "\n"
+
+    dut_instantiation += "\t);"
+    dut_instantiation += "\n"
+
+    print("Opening testbench.sv")
+    file = open("testbench.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    raw_lines[27] = dut_instantiation
+
+    new_file_as_string = ""
+
+    for i in raw_lines:
+        new_file_as_string += i
+
+    print("Writing this dut instantiation to testbench.sv")
+    print("\n")
+    print(dut_instantiation)
+    print("\n")
+
+    file = open("testbench.sv", "w")
+    file.write(new_file_as_string)
+    file.close()
+    print("Closing testbench.sv")
+
+
 if __name__ == "__main__":
 
     # Step 1: update design
@@ -363,3 +429,4 @@ if __name__ == "__main__":
     # Step 7: update rand_test
 
     # Step 8: update testbench
+    write_to_testbench(inputs_df, outputs_df, parameters, dut_name)
