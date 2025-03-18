@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def make_d_ff_design():
     raw_d_ff_text = """module d_ff (
     input  logic clk,
@@ -20,13 +23,260 @@ endmodule
     file.close()
 
 
+def get_port_name_and_no_of_bits(port_name_bits_split: len):
+    port_name = ""
+    no_of_bits = 1
+    if len(port_name_bits_split) == 1:
+        port_name = port_name_bits_split[0]
+        no_of_bits = 1
+    else:
+        port_name = port_name_bits_split[1]
+        bits_info = port_name_bits_split[0]
+
+        # removing [
+        bits_info = bits_info[1:]
+        low = int(bits_info.split(":")[1])
+        high = int(bits_info.split(":")[0])
+
+        # using abs to address [0:10] declarations as well
+        no_of_bits = abs(high - low) + 1
+    return [port_name, no_of_bits]
+
+
+def write_to_interface(input_ports, output_ports):
+    print("Opening interface.sv")
+    file = open("interface.sv", "w+")
+
+    has_clk_as_input = "y"
+
+    if has_clk_as_input == "y" or has_clk_as_input == "":
+        clk_port_name = "clk"
+        if clk_port_name not in input_ports["port_name"].values:
+            clk_port_name = input(
+                f"Unable to find {clk_port_name}. Please enter clk port name again "
+            )
+            if clk_port_name not in input_ports["port_name"].values:
+                print(f"Unable to find {clk_port_name}. Closing interface.sv")
+                file.close()
+                print("Abort")
+                return
+        else:
+            file.write(f"interface intf (input logic {clk_port_name});\n")
+
+    else:
+        file.write("interface intf ();\n")
+    file.write("\t// input ports\n")
+
+    # add input ports
+    for _, row in input_ports.iterrows():
+        port_name = row["port_name"]
+        logic_or_bit = row["logic_or_bit"]
+        no_of_bits = row["no_of_bits"]
+
+        # if clk is a input port for the interface, don't add it again.
+        if has_clk_as_input == "y" or has_clk_as_input == "":
+            if port_name == clk_port_name:
+                continue
+
+        if no_of_bits == 1:
+            if logic_or_bit:
+                file.write(f"\tlogic {port_name};\n")
+            else:
+                file.write(f"\tbit {port_name};\n")
+        else:
+            high = no_of_bits - 1
+            if logic_or_bit:
+                file.write(f"\tlogic [{high}:0] {port_name};\n")
+            else:
+                file.write(f"\tbit [{high}:0] {port_name};\n")
+
+    file.write("\n\t// output ports\n")
+
+    # add output ports
+    for _, row in output_ports.iterrows():
+        port_name = row["port_name"]
+        logic_or_bit = row["logic_or_bit"]
+        no_of_bits = row["no_of_bits"]
+
+        if no_of_bits == 1:
+            if logic_or_bit:
+                file.write(f"\tlogic {port_name};\n")
+            else:
+                file.write(f"\tbit {port_name};\n")
+        else:
+            high = no_of_bits - 1
+            if logic_or_bit:
+                file.write(f"\tlogic [{high}:0] {port_name};\n")
+            else:
+                file.write(f"\tbit [{high}:0] {port_name};\n")
+
+    file.write("endinterface : intf\n")
+    file.close()
+
+    print("Populated interface with port information")
+
+
 if __name__ == "__main__":
 
     # Step 1: update design
     make_d_ff_design()
 
     # Step 2: update interface
+    file_name = "design.sv"
+    file = open(file_name, "r")
+    raw_content_as_lines = file.readlines()
+    raw_content = ""
+    file.close()
 
+    # removing EOLs
+    for line in raw_content_as_lines:
+        line_without_eol = line.removesuffix("\n")
+        raw_content += line_without_eol
+
+    # removing empty spaces
+    content = ""
+    for char in raw_content:
+        if char != " ":
+            content += char
+    # module has 6 characters
+    dut_name = (content.split("(")[0])[6:]
+
+    # retrieve port content
+    temp = content.split("(")[1]  # first member is always module module_name
+
+    # retrieve parameter info
+    parameters = pd.DataFrame(
+        {
+            "name": pd.Series(dtype="str"),
+            "default": pd.Series(dtype=bool),
+            "default_val": pd.Series(dtype=int),
+        }
+    )
+    if temp.startswith("parameter"):
+
+        dut_name = dut_name[:-1]  # has # as the last char
+        print(f"DUT name: {dut_name}")
+        parameter_text = temp
+        temp = content.split("(")[2]  # module has parameters
+        parameters_raw = parameter_text.split(",")
+
+        print("Modules has parameters")
+        for raw_parameter in parameters_raw:
+            # parameter has 9 characters
+            pieces = raw_parameter.split("=")
+
+            name = pieces[0][9:]
+            if name.endswith(")"):
+                name = name[:-1]  # last parameter will have ) at the end
+
+            default = False
+            if len(pieces) > 1:
+                default = True
+
+            default_value = -1
+            if default:
+                default_value = pieces[1]
+
+            new_parameter = {
+                "name": name,
+                "default": default,
+                "default_val": default_value,
+            }
+
+            parameters.loc[len(parameters)] = new_parameter
+
+    if len(parameters) == 0:
+        print(f"DUT name: {dut_name}")
+
+    port_content = temp.split(")")[0]
+    port_content_list = port_content.split(",")
+
+    # inputs map
+    # key is port name and val is no of bits per port
+    inputs_df = pd.DataFrame(
+        {
+            "port_name": pd.Series(dtype="str"),  # Or 'object'
+            "logic_or_bit": pd.Series(dtype="bool"),  # Or 'int' if it's an integer
+            "no_of_bits": pd.Series(dtype="int"),
+        }
+    )
+    outputs_df = pd.DataFrame(
+        {
+            "port_name": pd.Series(dtype="str"),  # Or 'object'
+            "logic_or_bit": pd.Series(dtype="bool"),  # Or 'int' if it's an integer
+            "no_of_bits": pd.Series(dtype="int"),
+        }
+    )
+
+    input_matchings = ["inputlogic", "inputbit"]
+    output_matchings = ["outputlogic", "outputbit"]
+
+    for port in port_content_list:
+        port_name = ""
+        no_of_bits = 1
+        if port.startswith(input_matchings[0]):
+            str_len = len(input_matchings[0])
+            port_name_with_bits = port[str_len:]
+            port_name_bits_split = port_name_with_bits.split("]")
+
+            [port_name, no_of_bits] = get_port_name_and_no_of_bits(
+                port_name_bits_split=port_name_bits_split
+            )
+
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 1,
+                "no_of_bits": no_of_bits,
+            }
+            inputs_df.loc[len(inputs_df)] = new_port
+
+        if port.startswith(input_matchings[1]):
+            str_len = len(input_matchings[1])
+            port_name_with_bits = port[str_len:]
+            port_name_bits_split = port_name_with_bits.split("]")
+
+            [port_name, no_of_bits] = get_port_name_and_no_of_bits(
+                port_name_bits_split=port_name_bits_split
+            )
+
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 0,
+                "no_of_bits": no_of_bits,
+            }
+            inputs_df.loc[len(inputs_df)] = new_port
+
+        if port.startswith(output_matchings[0]):
+            str_len = len(output_matchings[0])
+            port_name_with_bits = port[str_len:]
+            port_name_bits_split = port_name_with_bits.split("]")
+
+            [port_name, no_of_bits] = get_port_name_and_no_of_bits(
+                port_name_bits_split=port_name_bits_split
+            )
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 1,
+                "no_of_bits": no_of_bits,
+            }
+            outputs_df.loc[len(outputs_df)] = new_port
+
+        if port.startswith(output_matchings[1]):
+            str_len = len(output_matchings[1])
+            port_name_with_bits = port[str_len:]
+            port_name_bits_split = port_name_with_bits.split("]")
+
+            [port_name, no_of_bits] = get_port_name_and_no_of_bits(
+                port_name_bits_split=port_name_bits_split
+            )
+            new_port = {
+                "port_name": port_name,
+                "logic_or_bit": 0,
+                "no_of_bits": no_of_bits,
+            }
+            outputs_df.loc[len(outputs_df)] = new_port
+
+    write_to_interface(inputs_df, outputs_df)
     # Step 3: update seq_item
 
     # Step 4: update driver
