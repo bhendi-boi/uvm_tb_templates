@@ -253,6 +253,53 @@ def write_to_scoreboard():
     file.close()
 
 
+def write_to_rand_test():
+    raw_rand_test = """class rand_test extends uvm_test;
+    `uvm_component_utils(rand_test)
+
+    env environment;
+    // ? STEP 9: Declare sequences
+    dummy_seq dummy_sequence;
+
+    function new(string name = "rand_test", uvm_component parent);
+        super.new(name, parent);
+        `uvm_info("Rand Test", "Constructed Rand Test", UVM_HIGH)
+    endfunction
+
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        `uvm_info("Rand Test", "Build phase environment", UVM_HIGH)
+        environment = env::type_id::create("env", this);
+    endfunction
+
+    task run_phase(uvm_phase phase);
+        super.run_phase(phase);
+        phase.raise_objection(this);
+
+        // ? instantiate sequences
+        dummy_sequence = dummy_seq::type_id::create("d0");
+
+        // Set no of transaction a sequence should generate
+        //  example syntax
+        dummy_sequence.set_no_of_tr(1024);
+
+        // ? start them on sequencer
+        dummy_sequence.start(environment.agent.sequencer);
+
+        // ? add any extra simulation delay
+
+        phase.drop_objection(this);
+    endtask
+
+endclass
+"""
+    print("Opening rand_test.sv")
+    file = open("rand_test.sv", "w")
+    file.write(raw_rand_test)
+    print("Closing rand_test.sv")
+    file.close()
+
+
 def write_to_testbench(input_ports, output_ports, parameters, dut_name):
     dut_instantiation = "\t"
 
@@ -494,6 +541,7 @@ if __name__ == "__main__":
     write_to_scoreboard()
 
     # Step 7: update rand_test
+    write_to_rand_test()
 
     # Step 8: update testbench
-    # write_to_testbench(inputs_df, outputs_df, parameters, dut_name)
+    write_to_testbench(inputs_df, outputs_df, parameters, dut_name)
