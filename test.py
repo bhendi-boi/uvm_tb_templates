@@ -1,6 +1,28 @@
 import pandas as pd
 
 
+def make_d_ff_design():
+    raw_d_ff_text = """module d_ff (
+    input  logic clk,
+    input  logic reset_n,
+    input  logic d_in,
+    output logic q_out
+);
+    always_ff @(posedge clk or negedge reset_n) begin
+        if (!reset_n) begin
+            q_out <= 1'b0;
+        end else begin
+            q_out <= d_in;
+        end
+    end
+
+endmodule
+"""
+    file = open("design.sv", "w")
+    file.write(raw_d_ff_text)
+    file.close()
+
+
 def get_port_name_and_no_of_bits(port_name_bits_split: len):
     port_name = ""
     no_of_bits = 1
@@ -25,13 +47,10 @@ def write_to_interface(input_ports, output_ports):
     print("Opening interface.sv")
     file = open("interface.sv", "w+")
 
-    has_clk_as_input = input(
-        "Do you wish to have clk as an input to the interface (y/n)"
-    )
+    has_clk_as_input = "y"
 
     if has_clk_as_input == "y" or has_clk_as_input == "":
-        clk_port_name = input("Enter your clk port name (case sensitive) ")
-
+        clk_port_name = "clk"
         if clk_port_name not in input_ports["port_name"].values:
             clk_port_name = input(
                 f"Unable to find {clk_port_name}. Please enter clk port name again "
@@ -103,9 +122,7 @@ def write_to_seq_item(input_ports, output_ports):
     raw_content = file.readlines()
     file.close()
 
-    clk_port_name = input(
-        "Please enter clk port name. We ask this to omit clk port from seq_item. "
-    )
+    clk_port_name = "clk"
     if clk_port_name not in input_ports["port_name"].values:
         clk_port_name = input(
             f"Unable to find {clk_port_name}.Please enter clk port name again. "
@@ -170,6 +187,117 @@ def write_to_seq_item(input_ports, output_ports):
     file.write(new_raw_content)
     file.close()
     print("Populated seq_item with port information.")
+
+
+def write_to_driver():
+    file = open("driver.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    drive_content = """ \t\t@(posedge vif.clk);
+        vif.reset_n <= tr.reset_n;
+        vif.d_in <= tr.d_in;
+        @(posedge vif.clk);\n"""
+
+    raw_lines[38] = drive_content
+
+    print("Opening driver.sv")
+    file = open("driver.sv", "w")
+    file.writelines(raw_lines)
+    print("Closing driver.sv")
+    file.close()
+
+
+def write_to_monitor():
+    file = open("monitor.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    sample_content = """\t\t@(posedge vif.clk);
+        tr.reset_n = vif.reset_n;
+        tr.d_in = vif.d_in;
+        @(posedge vif.clk);
+        tr.q_out = vif.q_out;\n"""
+
+    raw_lines[43] = sample_content
+
+    print("Opening monitor.sv")
+    file = open("monitor.sv", "w")
+    file.writelines(raw_lines)
+    print("Closing monitor.sv")
+    file.close()
+
+
+def write_to_scoreboard():
+    file = open("scoreboard.sv", "r")
+    raw_lines = file.readlines()
+    file.close()
+
+    sample_content = """\t\tif (!tr.reset_n) begin
+            if (tr.q_out) begin
+                `uvm_error("Scoreboard", "Reset error.")
+            end
+        end else begin
+            if (tr.d_in ^ tr.q_out) begin
+                `uvm_error("Scoreboard",
+                           "Non reset error. D and Q doesn't match")
+            end
+        end\n"""
+
+    raw_lines[24] = sample_content
+
+    print("Opening scoreboard.sv")
+    file = open("scoreboard.sv", "w")
+    file.writelines(raw_lines)
+    print("Closing scoreboard.sv")
+    file.close()
+
+
+def write_to_rand_test():
+    raw_rand_test = """class rand_test extends uvm_test;
+    `uvm_component_utils(rand_test)
+
+    env environment;
+    // ? STEP 9: Declare sequences
+    dummy_seq dummy_sequence;
+
+    function new(string name = "rand_test", uvm_component parent);
+        super.new(name, parent);
+        `uvm_info("Rand Test", "Constructed Rand Test", UVM_HIGH)
+    endfunction
+
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        `uvm_info("Rand Test", "Build phase environment", UVM_HIGH)
+        environment = env::type_id::create("env", this);
+    endfunction
+
+    task run_phase(uvm_phase phase);
+        super.run_phase(phase);
+        phase.raise_objection(this);
+
+        // ? instantiate sequences
+        dummy_sequence = dummy_seq::type_id::create("d0");
+
+        // Set no of transaction a sequence should generate
+        //  example syntax
+        dummy_sequence.set_no_of_tr(1024);
+
+        // ? start them on sequencer
+        dummy_sequence.start(environment.agent.sequencer);
+
+        // ? add any extra simulation delay
+
+        phase.drop_objection(this);
+    endtask
+
+endclass
+"""
+    print("Opening rand_test.sv")
+    file = open("rand_test.sv", "w")
+    file.write(raw_rand_test)
+    print("Closing rand_test.sv")
+    file.close()
 
 
 def write_to_testbench(input_ports, output_ports, parameters, dut_name):
@@ -238,28 +366,17 @@ def write_to_testbench(input_ports, output_ports, parameters, dut_name):
     print("Closing testbench.sv")
 
 
-def main():
+if __name__ == "__main__":
 
-    # Taking filename as a parameter
-    file_name = input(
-        "Enter design file name (Hit enter to consider default `design.sv`)"
-    )
-    if file_name == "":
-        file_name = "design.sv"
+    # Step 1: update design
+    make_d_ff_design()
 
-    print(f"Opening {file_name}")
-
-    try:
-        file = open(file_name, "r")
-    except:
-        print("File not found")
-        return  # Quitting if file is not found
-
+    # Step 2: update interface
+    file_name = "design.sv"
+    file = open(file_name, "r")
     raw_content_as_lines = file.readlines()
     raw_content = ""
     file.close()
-
-    print(f"Read {file_name}")
 
     # removing EOLs
     for line in raw_content_as_lines:
@@ -271,9 +388,6 @@ def main():
     for char in raw_content:
         if char != " ":
             content += char
-
-    print("Sanitised contents")
-
     # module has 6 characters
     dut_name = (content.split("(")[0])[6:]
 
@@ -320,11 +434,6 @@ def main():
             }
 
             parameters.loc[len(parameters)] = new_parameter
-
-        print("\n")
-        print("Found these parameters (-1 indicated no default value)\n")
-        print(parameters)
-        print("\n")
 
     if len(parameters) == 0:
         print(f"DUT name: {dut_name}")
@@ -417,35 +526,22 @@ def main():
             }
             outputs_df.loc[len(outputs_df)] = new_port
 
-    print("\n\n")
-    print("Found these input ports\n")
-    print(inputs_df)
-    print("\n\n")
+    write_to_interface(inputs_df, outputs_df)
 
-    print("Found these output ports\n")
-    print(outputs_df)
-    print("\n\n")
+    # Step 3: update seq_item
+    write_to_seq_item(inputs_df, outputs_df)
 
-    should_write_to_interface = input(
-        "Do you wish to populate interface with these ports? (y/n)"
-    )
-    if should_write_to_interface == "y" or should_write_to_interface == "":
-        write_to_interface(inputs_df, outputs_df)
+    # Step 4: update driver
+    write_to_driver()
 
-    print("\n")
-    should_write_to_seq_item = input(
-        "Do you wish to populate seq_item with these ports? (y/n)"
-    )
-    if should_write_to_seq_item == "y" or should_write_to_seq_item == "":
-        write_to_seq_item(inputs_df, outputs_df)
+    # Step 5: update monitor
+    write_to_monitor()
 
-    print("\n")
-    should_write_to_testbench = input(
-        "Do you wish to update testbench with dut instantiation (y/n)?"
-    )
-    if should_write_to_testbench == "y" or should_write_to_testbench == "":
-        write_to_testbench(inputs_df, outputs_df, parameters, dut_name)
+    # Step 6: update scoreboard
+    write_to_scoreboard()
 
+    # Step 7: update rand_test
+    write_to_rand_test()
 
-if __name__ == "__main__":
-    main()
+    # Step 8: update testbench
+    write_to_testbench(inputs_df, outputs_df, parameters, dut_name)

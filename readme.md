@@ -1,4 +1,4 @@
-# UVM Testbench template
+# Vanilla with io support
 
 ## Overview
 
@@ -34,8 +34,9 @@
   ```
 - This script can populate [interface](interface.sv) and [seq_item](seq_item.sv) classes with io ports information. So if you are using this script, you can skip the first two steps.
 - You can hit enter to consider the default value while using this script.
+- In addition to that this script can instantiate your dut in [testbench](testbench.sv) as well.
 - #### Some Caveats
-  This script is designed to work only with files that come out of the box i.e., if you change [interface](interface.sv) or [seq_item](seq_item.sv) before running the script, the script might not work properly.
+  This script is designed to work only with files that come out of the box i.e., if you change [interface](interface.sv), [seq_item](seq_item.sv) or [testbench](testbench.sv) before running the script, the script might not work properly.
 
 ### Steps
 
