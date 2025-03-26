@@ -1,3 +1,5 @@
+// ? Step 12: import the model function with appropriate args and return type
+// import "DPI-C" function int model(//args);
 class scb extends uvm_scoreboard;
     `uvm_component_utils(scb)
 
@@ -22,6 +24,7 @@ class scb extends uvm_scoreboard;
     endfunction
 
     function void compare(transaction tr);
+        // Make a call to the model function written in step 11
         // ? Fill this method with your comparison logic
     endfunction
 
