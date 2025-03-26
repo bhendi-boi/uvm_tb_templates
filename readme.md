@@ -34,8 +34,9 @@
   ```
 - This script can populate [interface](interface.sv) and [seq_item](seq_item.sv) classes with io ports information. So if you are using this script, you can skip the first two steps.
 - You can hit enter to consider the default value while using this script.
+- In addition to that this script can instantiate your dut in [testbench](testbench.sv) as well.
 - #### Some Caveats
-  This script is designed to work only with files that come out of the box i.e., if you change [interface](interface.sv) or [seq_item](seq_item.sv) before running the script, the script might not work properly.
+  This script is designed to work only with files that come out of the box i.e., if you change [interface](interface.sv), [seq_item](seq_item.sv) or [testbench](testbench.sv) before running the script, the script might not work properly.
 
 ### Steps
 
@@ -49,3 +50,5 @@
 8. [Optional] If you've changed analysis port name in scoreboard or monitor, update the same in [env.sv](env.sv) as well.
 9. Declare sequences, instantiate them and start them on sequencer in [rand_test.sv](rand_test.sv).
 10. Instantiate a dut instance and change the test name if required in [testbench.sv](testbench.sv).
+11. Model your dut in c in [model.cc](model.cc).
+12. Import your model function from step 11 and use it to predict dut behaviour and compare it with actual output from your dut in [scoreboard.sv](scoreboard.sv)
