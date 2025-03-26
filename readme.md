@@ -1,4 +1,4 @@
-# Vanilla with io support
+# Passive Agent with io support
 
 ## Overview
 
