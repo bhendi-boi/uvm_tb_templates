@@ -1,4 +1,4 @@
-# UVM Testbench template
+# Vanilla with io support
 
 ## Overview
 
