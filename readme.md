@@ -1,9 +1,10 @@
-# UVM Testbench template
+# DPI C Model with io support
 
 ## Overview
 
 - This is a generic uvm testbench env intended to be used as a starting point for your next verification project.
 - This project assumes you are going to use only one agent i.e; the agent is active.
+- This template assumes that you would like to use a C model to predict your `dut`'s response.
 - Coverage is not included as of now.
 
 ## How to use
