@@ -1,7 +1,10 @@
 // ? Step 11: Model your dut in c
 int model(
-    // args goes here
-)
+    int reset_n,
+    int d_in)
 {
-    // function body
+    if (!reset_n)
+        return 0;
+    else
+        return d_in;
 }

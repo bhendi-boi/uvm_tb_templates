@@ -25,7 +25,12 @@ module tb ();
     intf vif ();
 
     // ? STEP 10: Declare DUT
-    // dut_design_name dut ();
+	d_ff dut(
+		.clk(vif.clk),
+		.reset_n(vif.reset_n),
+		.d_in(vif.d_in),
+		.q_out(vif.q_out)
+	);
 
     initial begin
         uvm_config_db#(virtual intf)::set(null, "uvm_test_top*", "vif", vif);

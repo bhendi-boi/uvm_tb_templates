@@ -1,5 +1,8 @@
 // ? Step 12: import the model function with appropriate args and return type
-// import "DPI-C" function int model(//args);
+import "DPI-C" function int model(
+    int reset_n,
+    int d_in
+);
 class scb extends uvm_scoreboard;
     `uvm_component_utils(scb)
 
@@ -24,8 +27,9 @@ class scb extends uvm_scoreboard;
     endfunction
 
     function void compare(transaction tr);
-        // Make a call to the model function written in step 11
-        // ? Fill this method with your comparison logic
+        bit result = bit'(model(tr.reset_n, tr.d_in));
+        if (result == tr.q_out) `umv_info("Scoreboard", "No error", UVM_LOW)
+        else `uvm_error("Scoreboard", "Error detected")
     endfunction
 
     task run_phase(uvm_phase phase);
