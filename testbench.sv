@@ -22,15 +22,15 @@ module tb ();
         forever #10 clk = ~clk;
     end
 
-    intf vif ();
+    intf vif (.clk(clk));
 
     // ? STEP 10: Declare DUT
-	d_ff dut(
-		.clk(vif.clk),
-		.reset_n(vif.reset_n),
-		.d_in(vif.d_in),
-		.q_out(vif.q_out)
-	);
+    d_ff dut (
+        .clk(vif.clk),
+        .reset_n(vif.reset_n),
+        .d_in(vif.d_in),
+        .q_out(vif.q_out)
+    );
 
     initial begin
         uvm_config_db#(virtual intf)::set(null, "uvm_test_top*", "vif", vif);
