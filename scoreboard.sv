@@ -28,7 +28,7 @@ class scb extends uvm_scoreboard;
 
     function void compare(transaction tr);
         bit result = bit'(model(tr.reset_n, tr.d_in));
-        if (result == tr.q_out) `umv_info("Scoreboard", "No error", UVM_LOW)
+        if (result == tr.q_out) `uvm_info("Scoreboard", "No error", UVM_LOW)
         else `uvm_error("Scoreboard", "Error detected")
     endfunction
 
