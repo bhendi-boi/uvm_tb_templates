@@ -1,11 +1,11 @@
 interface intf (
-    input logic i_clk
+    input logic clk
 );
-    logic i_rst;
-    logic [31:0] i_dividend;
-    logic [31:0] i_divisor;
-    logic i_start;
-    logic o_ready;
-    logic o_quotient;
-    logic o_remainder;
+    logic rst;
+    logic [31:0] dividend;
+    logic [31:0] divisor;
+    logic start;
+    logic ready;
+    logic [31:0] quotient;
+    logic [31:0] remainder;
 endinterface : intf

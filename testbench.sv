@@ -22,18 +22,18 @@ module tb ();
         forever #10 clk = ~clk;
     end
 
-    intf vif (.i_clk(clk));
+    intf vif (.clk(clk));
 
     // ? STEP 10: Declare DUT
     divider_dshift dut (
-        .i_clk(intf.clk),
-        .i_rst(intf.rst),
-        .i_dividend(intf.dividend),
-        .i_divisor(intf.divisor),
-        .i_start(intf.start),
-        .o_ready(intf.ready),
-        .o_quotient(intf.quotient),
-        .o_remainder(intf.remainder)
+        .i_clk(vif.clk),
+        .i_rst(vif.rst),
+        .i_dividend(vif.dividend),
+        .i_divisor(vif.divisor),
+        .i_start(vif.start),
+        .o_ready(vif.ready),
+        .o_quotient(vif.quotient),
+        .o_remainder(vif.remainder)
     );
 
     initial begin
