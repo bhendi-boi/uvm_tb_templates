@@ -1,15 +1,22 @@
-class dummy_seq extends uvm_sequence;
-    `uvm_object_utils(dummy_seq)
+class div_by_mul_2_seq extends uvm_sequence;
+    `uvm_object_utils(div_by_mul_2_seq)
 
     transaction tr;
     int no_of_tr;
 
-    function new(string name = "dummy_sequence");
+    constraint divisor_lesser_than_dividend {
+        this.tr.divisor < this.tr.dividend;
+    }
+
+    constraint divisor_is_multiple_of_2 {this.tr.divisor % 2 == 0;}
+
+    function new(string name = "div_by_mul_2_seq");
         super.new(name);
-        `uvm_info("Dummy sequence", "Constructed dummy_seq", UVM_HIGH)
+        this.set_no_of_tr(1);
+        `uvm_info("Div By Multiple of 2", "Constructed div_by_mul_2_seq",
+                  UVM_HIGH)
     endfunction
 
-    // using a setter funciton to set no_of_tr dynamically from uvm_test. Can be replaced uvm_config_db as well.
     function void set_no_of_tr(int no_of_tr);
         this.no_of_tr = no_of_tr;
     endfunction
@@ -17,7 +24,6 @@ class dummy_seq extends uvm_sequence;
     task body();
         tr = transaction::type_id::create("tr");
 
-        // ? STEP 3: Add constraints here
 
         repeat (no_of_tr) begin
             start_item(tr);
@@ -27,4 +33,11 @@ class dummy_seq extends uvm_sequence;
         end
     endtask
 
+endclass
+
+
+class div_by_mul_2_pos_seq extends div_by_mul_2_seq;
+    `uvm_object_utils(div_by_mul_2_pos_seq)
+
+    constraint divisor_is_positive {this.tr.divisor[31] == 0;}
 endclass
