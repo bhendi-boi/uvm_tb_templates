@@ -1,7 +1,6 @@
 class drv extends uvm_driver #(transaction);
     `uvm_component_utils(drv)
 
-    // ? STEP 5: If you've changed the interface name, change it here as well
     virtual intf vif;
     transaction  tr;
 
@@ -14,7 +13,6 @@ class drv extends uvm_driver #(transaction);
         super.build_phase(phase);
         `uvm_info("Driver", "Build phase driver", UVM_HIGH)
 
-        // ? If you've changed the interface name, change it here as well
         if (!(uvm_config_db#(virtual intf)::get(this, "", "vif", vif))) begin
             `uvm_fatal("Driver", "Driver couldn't get vif")
         end
@@ -30,13 +28,18 @@ class drv extends uvm_driver #(transaction);
             seq_item_port.get_next_item(tr);
             drive(tr);
             `uvm_info("Driver", "Drove a transaction", UVM_NONE)
-            tr.print();
+            `uvm_info("Driver", tr.convert2string(), UVM_NONE)
             seq_item_port.item_done();
         end
     endtask
 
     task drive(transaction tr);
-        // ? Fill this task
+        @(posedge vif.clk);
+        vif.start <= 1;
+        vif.divisor <= tr.divisor;
+        vif.dividend <= tr.dividend;
+        @(posedge vif.ready);
+        vif.start <= 0;
     endtask
 
 endclass
