@@ -27,6 +27,7 @@ class mon extends uvm_monitor;
         super.run_phase(phase);
         `uvm_info("Monitor", "Build phase monitor", UVM_HIGH)
         tr = transaction::type_id::create("item");
+        reset_dut();
 
         forever begin
             sample ();
@@ -46,5 +47,9 @@ class mon extends uvm_monitor;
         tr.remainder = vif.remainder;
     endtask
 
+    task reset_dut();
+        @(posedge vif.clk);
+        @(posedge vif.clk);
+    endtask
 
 endclass
