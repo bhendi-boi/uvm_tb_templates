@@ -22,10 +22,19 @@ module tb ();
         forever #10 clk = ~clk;
     end
 
-    intf vif ();
+    intf vif (.i_clk(clk));
 
     // ? STEP 10: Declare DUT
-    // dut_design_name dut ();
+    divider_dshift dut (
+        .i_clk(intf.clk),
+        .i_rst(intf.rst),
+        .i_dividend(intf.dividend),
+        .i_divisor(intf.divisor),
+        .i_start(intf.start),
+        .o_ready(intf.ready),
+        .o_quotient(intf.quotient),
+        .o_remainder(intf.remainder)
+    );
 
     initial begin
         uvm_config_db#(virtual intf)::set(null, "uvm_test_top*", "vif", vif);
