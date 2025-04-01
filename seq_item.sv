@@ -15,7 +15,7 @@ class transaction extends uvm_sequence_item;
     // write do_compare function
     // write convert2string function
 
-    function void convert2string();
+    function string convert2string();
         string msg = $sformatf("Reset = %0d", this.rst);
         msg = {
             msg,
