@@ -2,7 +2,7 @@ class rand_test extends uvm_test;
     `uvm_component_utils(rand_test)
 
     env environment;
-    div_by_mul_2_seq s0;
+    div_by_mul_2_pos_seq s0;
 
     function new(string name = "rand_test", uvm_component parent);
         super.new(name, parent);
