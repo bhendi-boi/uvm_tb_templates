@@ -20,7 +20,7 @@ class rand_test extends uvm_test;
         phase.raise_objection(this);
 
         // ? instantiate sequences
-        s0 = div_by_mul_2_seq::type_id::create("div_by_mul_2_seq");
+        s0 = div_by_mul_2_pos_seq::type_id::create("div_by_mul_2_seq");
         s0.set_no_of_tr(2);
 
         s0.start(environment.agent.sequencer);
