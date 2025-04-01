@@ -1,11 +1,11 @@
 class transaction extends uvm_sequence_item;
     `uvm_object_utils(transaction)
 
-    // ? STEP 2
-    // declare DUT inputs as rand here
+    rand bit rst;
+    rand bit [31:0] divisor, dividend;
+    bit [31:0] quotient, remainder;
 
 
-    // declare DUT output as logic here
 
     function new(string name = "transaction");
         super.new(name);
@@ -15,9 +15,22 @@ class transaction extends uvm_sequence_item;
     // write do_compare function
     // write convert2string function
 
-    function void do_print(uvm_printer printer);
-        super.do_print(printer);
-        // Print a transaction's fields here
+    function void convert2string();
+        string msg = $sformatf("Reset = %0d", this.rst);
+        msg = {
+            msg,
+            $sformatf(
+                "Divisor = %0d, Dividend = %0d", this.divisor, this.dividend
+            )
+        };
+
+        msg = {
+            msg,
+            $sformatf(
+                "Quotient = %0d, Remainder = %0d", this.quotient, this.remainder
+            )
+        };
+        return msg;
     endfunction
 
 endclass
