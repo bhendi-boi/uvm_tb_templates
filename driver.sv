@@ -46,7 +46,7 @@ class drv extends uvm_driver #(transaction);
     task reset_dut();
         @(posedge vif.clk);
         vif.rst <= 0;
-        @(posedge vif.clk);
+        @(negedge vif.clk);
         vif.rst <= 1;
     endtask
 

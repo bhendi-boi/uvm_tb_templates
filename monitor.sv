@@ -49,7 +49,7 @@ class mon extends uvm_monitor;
 
     task reset_dut();
         @(posedge vif.clk);
-        @(posedge vif.clk);
+        // @(posedge vif.clk);
     endtask
 
 endclass
