@@ -16,18 +16,20 @@ class transaction extends uvm_sequence_item;
     // write convert2string function
 
     function string convert2string();
-        string msg = $sformatf("Reset = %0d", this.rst);
+        string msg = $sformatf("Reset = %0d\n", this.rst);
         msg = {
             msg,
             $sformatf(
-                "Divisor = %0d, Dividend = %0d", this.divisor, this.dividend
+                "Divisor = %0d, Dividend = %0d\n", this.divisor, this.dividend
             )
         };
 
         msg = {
             msg,
             $sformatf(
-                "Quotient = %0d, Remainder = %0d", this.quotient, this.remainder
+                "Quotient = %0d, Remainder = %0d\n",
+                this.quotient,
+                this.remainder
             )
         };
         return msg;
