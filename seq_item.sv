@@ -20,7 +20,9 @@ class transaction extends uvm_sequence_item;
         msg = {
             msg,
             $sformatf(
-                "Divisor = %0d, Dividend = %0d\n", this.divisor, this.dividend
+                "Divisor = %0d, Dividend = %0d\n",
+                int'(this.divisor),
+                int'(this.dividend)
             )
         };
 
@@ -28,8 +30,8 @@ class transaction extends uvm_sequence_item;
             msg,
             $sformatf(
                 "Quotient = %0d, Remainder = %0d\n",
-                this.quotient,
-                this.remainder
+                int'(this.quotient),
+                int'(this.remainder)
             )
         };
         return msg;
