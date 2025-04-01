@@ -42,4 +42,5 @@ class div_by_mul_2_pos_seq extends div_by_mul_2_seq;
     `uvm_object_utils(div_by_mul_2_pos_seq)
 
     constraint divisor_is_positive {this.tr.divisor[31] == 0;}
+    constraint dividend_is_positive {this.tr.dividend[31] == 0;}
 endclass
