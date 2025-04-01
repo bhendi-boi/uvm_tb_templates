@@ -1,11 +1,10 @@
 class mon extends uvm_monitor;
     `uvm_component_utils(mon)
 
-    // ? STEP 6: If you've changed the interface name, change it here as well
+
     virtual intf vif;
     transaction tr;
 
-    // ? you can change the name of the analysis port here
     uvm_analysis_port #(transaction) monitor_port;
 
     function new(string name = "mon", uvm_component parent);
@@ -19,7 +18,6 @@ class mon extends uvm_monitor;
         `uvm_info("Monitor", "Build phase monitor", UVM_HIGH)
         monitor_port = new("monitor_port", this);
 
-        // ? If you've changed the interface name, change it here as well
         if (!(uvm_config_db#(virtual intf)::get(this, "", "vif", vif)))
             `uvm_fatal("Monitor", "Couldn't get vif in monitor!")
     endfunction
@@ -33,15 +31,19 @@ class mon extends uvm_monitor;
         forever begin
             sample ();
             `uvm_info("Monitor", "Sampled a sequence", UVM_NONE)
-
-            // ? change the analysis port name here as well
+            `uvm_info("Monitor", tr.convert2string(), UVM_NONE)
             monitor_port.write(tr);
         end
 
     endtask
 
     task sample ();
-        // ? Fill this task
+        @(posedge vif.start);
+        tr.divisor  = vif.divisor;
+        tr.dividend = vif.dividend;
+        @(posedge vif.ready);
+        tr.quotient  = vif.quotient;
+        tr.remainder = vif.remainder;
     endtask
 
 
