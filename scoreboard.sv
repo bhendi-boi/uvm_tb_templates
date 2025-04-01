@@ -36,6 +36,13 @@ class scb extends uvm_scoreboard;
         remainder = find_remainder(tr.divisor, tr.dividend);
         `uvm_info("Scoreboard", $sformatf("Remainder = %d", remainder),
                   UVM_NONE)
+
+        if ((int'(tr.quotient) ^ quotient)) begin
+            `uvm_error("Scoreboard", "Quotient Error")
+        end else if (int'(tr.remainder) ^ remainder) begin
+            `uvm_error("Scoreboard", "Remainder Error")
+        end else `uvm_info("Scoreboard", "No Errors detected", UVM_NONE)
+
     endfunction
 
     task run_phase(uvm_phase phase);
